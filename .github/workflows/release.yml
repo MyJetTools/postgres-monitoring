@@ -1,0 +1,60 @@
+name: Release App
+on:
+  push:
+    tags: ["*"]
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/postgres-monitoring
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container:
+      image: myjettools/dioxus-docker:0.1.2
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Update the version
+        id: get_version
+        run: |
+          ver=${GITHUB_REF_NAME}
+          echo $ver
+          sed -i -e 's/^version = .*/version = "'$ver'"/' Cargo.toml
+          
+
+      - name: Build the app        
+        run: |
+          export GIT_HUB_TOKEN=${{ secrets.PUBLISH_TOKEN }}
+          dx build --platform fullstack --release
+          ls ./dist
+          python3 build.py ./dist/index.html
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            ./target/release/postgres-monitoring  
+            ./dist 
+            ./Dockerfile
+
+  publish:
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - uses: actions/checkout@v2    
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts 
+
+      - name: Docker login
+        run: |  
+          echo "${{ secrets.PUBLISH_TOKEN }}" | docker login https://ghcr.io -u "${{ github.actor }}" --password-stdin   
+      - name: Docker Build and Publish
+        run: |
+          ver=${GITHUB_REF_NAME}
+          echo $ver        
+          docker build -t ${IMAGE_NAME}:$ver .
+          docker push ${IMAGE_NAME}:$ver

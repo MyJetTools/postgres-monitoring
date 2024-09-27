@@ -1,0 +1,71 @@
+[package]
+name = "postgres-monitoring"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = []
+server = [
+    "dioxus/axum",
+    "my-logger",
+    "my-postgres",
+    "tokio",
+    "tonic",
+    "async-trait",
+    "anyhow",
+    "futures",
+    "lazy_static",
+    "serde_yaml",
+    "flurl",
+    "my-settings-reader",
+    "my-ssh",
+    "dioxus-utils/server",
+]
+web = ["dioxus/web"]
+
+[dependencies]
+rust-extensions = { tag = "0.1.4", git = "https://github.com/MyJetTools/rust-extensions.git", features = [
+    "base64",
+] }
+my-logger = { tag = "1.1.0", git = "https://github.com/MyJetTools/my-logger.git", optional = true }
+
+my-postgres = { path = "../my-postgres/my-postgres/my-postgres", features = [
+    "with-ssh",
+    "macros",
+], optional = true }
+
+dioxus-utils = { tag = "0.1.0", git = "https://github.com/MyJetTools/dioxus-utils.git", features = [
+    "fullstack",
+] }
+
+settings-utils = { tag = "0.1.1", git = "https://github.com/MyJetTools/settings-utils.git" }
+dioxus = { version = "0.5", features = ["fullstack", "router"] }
+serde = "*"
+getrandom = { version = "*", features = ["js"] }
+
+tokio = { version = "*", features = ["full"], optional = true }
+serde_json = { version = "*" }
+serde_yaml = { version = "*", optional = true }
+futures = { version = "*", optional = true }
+tonic = { version = "*", features = [
+    "tls",
+    "tls-roots",
+    "prost",
+], optional = true }
+anyhow = { version = "*", optional = true }
+prost = { version = "*" }
+prost-types = { version = "*" }
+async-trait = { version = "*", optional = true }
+lazy_static = { version = "*", optional = true }
+flurl = { tag = "0.5.3", git = "https://github.com/MyJetTools/fl-url.git", optional = true }
+base64 = { version = "*" }
+
+my-ssh = { tag = "0.1.1", git = "https://github.com/MyJetTools/my-ssh.git", optional = true }
+
+
+my-settings-reader = { tag = "0.3.2", git = "https://github.com/MyJetTools/my-settings-reader.git", optional = true }
+uuid = { version = "*", features = ["v4"] }
+[build-dependencies]
+ci-utils = { git = "https://github.com/MyJetTools/ci-utils.git", tag = "0.1.1" }

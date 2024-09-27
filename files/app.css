@@ -1,0 +1,199 @@
+body {
+    --panel-width: 200px;
+    --app-width: 100vw;
+    --app-height: 100vh;
+}
+
+#left-panel {
+    position: absolute;
+    top: 0;
+    width: var(--panel-width);
+    height: var(--app-height);
+    left: 0;
+    background-color: rgb(40, 42, 66);
+    box-shadow: 0 0 5px black;
+    z-index: 10;
+}
+
+
+#main-panel {
+    position: absolute;
+    width: calc(var(--app-width) - var(--panel-width));
+    height: var(--app-height);
+    top: 0;
+    left: var(--panel-width);
+    background-color: white;
+    overflow-y: auto;
+}
+
+.menu {
+    color: white;
+    padding: 10px;
+}
+
+.menu-item {
+    color: white;
+    padding-left: 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    display: block;
+}
+
+.menu-item-active {
+    border: 1px solid white;
+    padding: 10px;
+    border-radius: 5px;
+    padding-left: 18px;
+}
+
+
+.red-ball {
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: red !important;
+    border-radius: 50%;
+    padding: 0 !important;
+    margin: 0;
+    margin-left: 5px !important;
+}
+
+.dark-red-ball {
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: darkred !important;
+    border-radius: 50%;
+    padding: 0 !important;
+    margin: 0;
+    margin-left: 5px !important;
+}
+
+.orange-ball {
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: orange !important;
+    border-radius: 50%;
+    padding: 0 !important;
+    margin: 0;
+    margin-left: 5px !important;
+
+}
+
+.green-ball {
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: green !important;
+    border-radius: 50%;
+    padding: 0 !important;
+    margin: 0;
+    margin-left: 5px !important;
+}
+
+.yellow-ball {
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: yellow !important;
+    border-radius: 50%;
+    padding: 0 !important;
+    margin: 0;
+    margin-left: 5px !important;
+}
+
+.gray-ball {
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: gray !important;
+    border-radius: 50%;
+    padding: 0 !important;
+    margin: 0;
+    margin-left: 5px !important;
+}
+
+.edit-wrapper {
+    border: 1px solid var(--vz-border-color);
+    border-radius: 5px;
+    padding: 7px;
+}
+
+#dialog-pad {
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    width: var(--app-width);
+    height: var(--app-height);
+
+    background-color: #ffffffeb;
+    z-index: 1000;
+}
+
+.graph-wrapper {
+    width: 100%
+}
+
+.graph-errors {
+    background-color: red;
+    height: 3px;
+}
+
+
+.graph-fatal-errors {
+    background-color: rgb(86, 0, 0);
+    height: 3px;
+}
+
+.graph-fatal-warnings {
+    background-color: orange;
+    height: 3px;
+}
+
+.form-control-sm {
+    padding: 3px;
+    border-radius: 5px;
+}
+
+.form-select-sm {
+    padding: 3px;
+    border-radius: 5px;
+    border: 1px solid var(--vz-border-color);
+}
+
+.modal-dialog {
+    box-shadow: 0 12px 47px #00000024;
+}
+
+
+#insights-panel {
+    width: 400px;
+    height: 300px;
+    position: absolute;
+    background: white;
+    box-shadow: 0px 0px 13px #00000057;
+    border-radius: 5px;
+    display: none;
+    border: 1px solid lightgray
+}
+
+
+.server-info {
+    color: white;
+    position: absolute;
+    bottom: 7px;
+    text-align: center;
+    width: var(--panel-width);
+}
+
+
+.expand-collapse-ico {
+    height: 24px;
+    border: 1px solid gray;
+    border-radius: 25px;
+    margin-right: 10px;
+    box-shadow: 0 0 2px gray;
+    cursor: pointer;
+}

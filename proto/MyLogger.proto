@@ -1,0 +1,149 @@
+
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+package my_logger;
+
+enum LogLevelGrpcModel{
+    Info = 0;
+    Warning = 1;
+    Error = 2;
+    Fatal = 3;
+    Debug = 4;
+}
+
+message LogEventGrpcModel{
+    string TenantId = 1;
+    int64 Timestamp = 2;
+    string ProcessName =3;
+    string Message = 4;
+    LogLevelGrpcModel Level = 5;
+    repeated LogEventContext Ctx = 6;
+}
+
+message LogEventContext{
+    string Key = 1;
+    string Value = 2;
+}
+
+message GetStatisticsRequest{
+    string TenantId = 1;
+    int64 FromTime =2;
+    int64 ToTime =3;
+}
+
+message ReadLogEventRequest{
+    string TenantId = 1;
+    int64 FromTime =2;
+    int64 ToTime =3;
+    int32 Take = 4;
+    int32 Skip = 5;
+    repeated LogLevelGrpcModel Levels = 6;
+    repeated LogEventContext ContextKeys = 7;
+}
+
+message GetStatisticRequest{
+    string TenantId = 1;
+    int64 FromTime =2;
+    int64 ToTime =3;
+}
+
+message StatisticData{
+    int32 InfoCount = 1;
+    int32 WarningCount = 2;
+    int32 ErrorCount = 3;
+    int32 FatalCount = 4;
+    int32 DebugCount = 5;
+}
+
+message IgnoreEventGrpcModel{
+    LogLevelGrpcModel Level = 1;
+    string Application = 2;
+    string Marker = 3;
+}
+
+message DeleteIgnoreEventGrpcRequest{
+    LogLevelGrpcModel Level = 1;
+    string Application = 2;
+    string Marker = 3;
+}
+
+message ScanAndSearchRequest{
+    string TenantId = 1;
+    string Phrase = 2;
+    int64 FromTime = 3;
+    int64 ToTime = 4;
+    int32 Take = 5;
+}
+
+message IgnoreSingleEventGrpcModel{
+    string Id = 1;
+    repeated LogLevelGrpcModel Levels = 2;
+    string MessageMatch = 3;
+    repeated LogEventContext ContextMatch = 4;
+    uint64 SkipAmount = 5;
+    uint64 MinutesToWait = 6;
+}
+
+message DeleteIgnoreSingleEventGrpcRequest{
+    string Id = 1;
+}
+
+
+message GetHourlyStatisticsRequest{
+    int64 AmountOfHours = 1;
+}
+
+message HourlyStatisticsGrpcModel{
+    uint64 HourKey = 1;
+    string App = 2;
+    uint32 InfoCount = 3;
+    uint32 WarningCount = 4;
+    uint32 ErrorCount = 5;
+    uint32 FatalCount = 6;
+    uint32 DebugCount = 7;
+}
+
+message GetInsightsKeysResponse{
+    repeated string Keys = 1;
+}
+
+message GetInsightsValuesRequest{
+    string Key = 1;
+    string Phrase = 2;
+}
+
+message GetInsightsValuesResponse{
+    repeated string Values = 1;
+}
+
+
+message ServerInfoGrpcResponse{
+    string Version = 1;
+    uint32 HoursToGc = 2;
+}
+
+service MyLogger {
+    rpc Write(stream LogEventGrpcModel) returns (google.protobuf.Empty);
+    rpc Read(ReadLogEventRequest) returns (stream LogEventGrpcModel);
+    rpc GetStatistic(GetStatisticsRequest) returns (StatisticData);
+
+    rpc ScanAndSearch(ScanAndSearchRequest) returns (stream LogEventGrpcModel);
+
+    rpc SetIgnoreEvent(IgnoreEventGrpcModel) returns (google.protobuf.Empty);
+    rpc GetIgnoreEvents(google.protobuf.Empty) returns (stream IgnoreEventGrpcModel);
+    rpc DeleteIgnoreEvent(DeleteIgnoreEventGrpcRequest) returns (google.protobuf.Empty);
+
+    rpc GetInsightsKeys(google.protobuf.Empty) returns (GetInsightsKeysResponse);
+    rpc GetInsightsValues(GetInsightsValuesRequest) returns ( GetInsightsValuesResponse);
+
+    rpc SetIgnoreSingleEvent(IgnoreSingleEventGrpcModel) returns (google.protobuf.Empty);
+    rpc GetIgnoreSingleEvents(google.protobuf.Empty) returns (stream IgnoreSingleEventGrpcModel);
+    rpc DeleteIgnoreSingleEvent(DeleteIgnoreSingleEventGrpcRequest) returns (google.protobuf.Empty);
+
+    rpc GetHourlyStatistics(GetHourlyStatisticsRequest) returns (stream HourlyStatisticsGrpcModel);
+
+
+    rpc GetServerInfo(google.protobuf.Empty) returns (ServerInfoGrpcResponse);
+
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+ }
