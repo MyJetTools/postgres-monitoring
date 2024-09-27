@@ -10,28 +10,34 @@ use serde::*;
 
 #[component]
 pub fn RenderDashboard() -> Element {
-    let env = {
-        consume_context::<Signal<MainState>>()
-            .read()
-            .get_selected_env()
+    let mut main_state = consume_context::<Signal<MainState>>();
+    let (env, pg_activity_data) = {
+        let main_state = main_state.read();
+        (
+            main_state.get_selected_env(),
+            main_state.pg_activity.clone(),
+        )
     };
 
     let mut state = use_signal(|| DashBoardState::new());
 
     let state_data = { state.read().clone() };
 
-    let mut data_state: Signal<DataState<Rc<PgActivityHttpResponse>>> =
-        use_signal(|| DataState::None);
-
-    let data_state_value = { data_state.read().clone() };
-    let data = match data_state_value {
+    let data = match pg_activity_data {
         DataState::None => {
-            data_state.set(DataState::Loading);
+            main_state.write().pg_activity = DataState::Loading;
 
             spawn(async move {
-                let items = get_pg_activity(env.to_string()).await.unwrap();
+                let items = get_pg_activity(env.to_string()).await;
 
-                data_state.set(DataState::Loaded(Rc::new(items)));
+                match items {
+                    Ok(items) => {
+                        main_state.write().pg_activity = DataState::Loaded(Rc::new(items));
+                    }
+                    Err(err) => {
+                        main_state.write().pg_activity = DataState::Err(err.to_string());
+                    }
+                }
             });
             return rsx! {
                 div { "Loading..." }
@@ -45,6 +51,12 @@ pub fn RenderDashboard() -> Element {
         }
 
         DataState::Loaded(data) => data,
+
+        DataState::Err(message) => {
+            return rsx! {
+                h1 { style: "color:red", "Error: {message}" }
+            }
+        }
     };
 
     let now = DateTimeAsMicroseconds::new(data.now);

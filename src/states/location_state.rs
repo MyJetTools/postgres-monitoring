@@ -1,6 +1,7 @@
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum LocationState {
     Dashboard,
+    DbSize,
 }
 
 impl LocationState {

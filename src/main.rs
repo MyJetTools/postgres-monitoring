@@ -36,14 +36,8 @@ enum Route {
     #[route("/")]
     Home {},
 
-    #[route("/logs/:..data")]
-    Logs { data: Vec<String> },
-
-    #[route("/ignoreLists/:..data")]
-    IgnoreLists { data: Vec<String> },
-
-    #[route("/settings")]
-    Settings {},
+    #[route("/dbsize")]
+    DbSize {},
 }
 
 fn main() {
@@ -67,19 +61,9 @@ fn Home() -> Element {
 }
 
 #[component]
-fn Logs(data: Vec<String>) -> Element {
-    use models::*;
-    use_context_provider(|| Signal::new(LocationState::Dashboard));
+fn DbSize() -> Element {
+    use_context_provider(|| Signal::new(LocationState::DbSize));
 
-    if let Some(data) = data.get(0) {
-        if let Some(model) = LogPathDataModel::from_base_64(data.as_str()) {
-            crate::storage_settings::log_level::set(model.get_log_level());
-            crate::storage_settings::search_line::set(&model.search_string);
-            crate::storage_settings::ctx_search::set(model.is_ctx_search);
-        }
-    }
-
-    //crate::storage_settings::clean_all();
     App()
 }
 
@@ -159,6 +143,10 @@ fn ActiveApp() -> Element {
     let right_panel = match location_state_value {
         LocationState::Dashboard => rsx! {
             RenderDashboard {}
+        },
+
+        LocationState::DbSize => rsx! {
+            RenderDbSize {}
         },
     };
 

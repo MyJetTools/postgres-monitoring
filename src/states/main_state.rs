@@ -1,10 +1,11 @@
+use std::collections::BTreeMap;
 use std::rc::Rc;
 
 use dioxus_utils::js::WebLocalStorage;
 
 use crate::storage_settings::selected_time_zone::SelectedTimeZone;
 
-use crate::models::*;
+use crate::{models::*, PgActivityHttpResponse};
 
 pub const ENV_LOCAL_STORAGE_KEY: &str = "env";
 use super::DataState;
@@ -14,6 +15,8 @@ pub struct MainState {
     pub envs: Option<Vec<Rc<String>>>,
     pub selected_time_zone: SelectedTimeZone,
     pub server_settings: DataState<Rc<ServerInfoModel>>,
+    pub pg_activity: DataState<Rc<PgActivityHttpResponse>>,
+    pub pg_data_size: DataState<Rc<BTreeMap<String, Vec<PgDbSizeHttpModel>>>>,
     time_zone: TimeZone,
 }
 
@@ -28,6 +31,8 @@ impl MainState {
             storage,
             time_zone: TimeZone::default(),
             selected_time_zone,
+            pg_activity: DataState::None,
+            pg_data_size: DataState::None,
         }
     }
 
@@ -71,5 +76,8 @@ impl MainState {
         self.envs.as_ref().unwrap().first().unwrap().clone()
     }
 
-    pub fn reset_data(&mut self) {}
+    pub fn reset_data(&mut self) {
+        self.pg_activity = DataState::None;
+        self.pg_data_size = DataState::None;
+    }
 }

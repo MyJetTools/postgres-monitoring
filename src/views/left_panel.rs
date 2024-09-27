@@ -6,6 +6,7 @@ const CLASS_NAME: &str = "menu-item-active";
 #[component]
 pub fn LeftPanel() -> Element {
     let mut dashboard_active = "";
+    let mut db_size_active = "";
 
     let location_state_value = {
         let location_state = consume_context::<Signal<LocationState>>();
@@ -16,6 +17,10 @@ pub fn LeftPanel() -> Element {
     match location_state_value {
         LocationState::Dashboard => {
             dashboard_active = CLASS_NAME;
+        }
+
+        LocationState::DbSize => {
+            db_size_active = CLASS_NAME;
         }
     }
 
@@ -33,38 +38,10 @@ pub fn LeftPanel() -> Element {
 
         div { style: "padding: 5px" }
 
-        Link { class: "menu-item {dashboard_active}", to: "/", "Dashboard" }
+        Link { class: "menu-item {dashboard_active}", to: crate::Route::Home {}, "Dashboard" }
+
+        Link { class: "menu-item {db_size_active}", to: crate::Route::DbSize {}, "Db Size" }
 
         div { class: "server-info", {client_version} }
-    }
-}
-
-fn format_hours_to_gc(value: u32) -> String {
-    if value < 24 {
-        format!("{}h", value)
-    } else {
-        let days = value / 24;
-        let hours = value % 24;
-        format!("{}d {}h", days, hours)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::format_hours_to_gc;
-
-    #[test]
-    fn test() {
-        let result = format_hours_to_gc(23);
-
-        assert_eq!(result, "23h");
-
-        let result = format_hours_to_gc(24);
-
-        assert_eq!(result, "1d 0h");
-
-        let result = format_hours_to_gc(25);
-
-        assert_eq!(result, "1d 1h");
     }
 }
