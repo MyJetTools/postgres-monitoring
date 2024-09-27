@@ -4,7 +4,7 @@ on:
     tags: ["*"]
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/postgres-monitoring
+  IMAGE_NAME: ghcr.io/myjettools/postgres-monitoring
 
 jobs:
   build:
