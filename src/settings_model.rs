@@ -25,6 +25,42 @@ impl SettingsModel {
             .map(|(db_name, con_string)| (db_name.clone(), AppPostgresSettings(con_string.clone())))
             .collect()
     }
+
+    pub async fn get_ssh_private_key(&self, env: &str) -> Option<(String, Option<String>)> {
+        let ssh_credentials = self.ssh_credentials.as_ref()?;
+
+        if let Some(itm) = ssh_credentials.get(env) {
+            let file_path = rust_extensions::file_utils::format_path(itm.cert_path.as_str());
+
+            let cert_content = tokio::fs::read_to_string(file_path.as_str()).await;
+
+            if let Err(err) = &cert_content {
+                panic!(
+                    "Can not read cert file: {}. Err: {:?}",
+                    file_path.as_str(),
+                    err
+                );
+            }
+
+            return Some((cert_content.unwrap(), Some(itm.cert_pass_prase.clone())));
+        }
+
+        let itm = ssh_credentials.get("*")?;
+
+        let file_path = rust_extensions::file_utils::format_path(itm.cert_path.as_str());
+
+        let cert_content = tokio::fs::read_to_string(file_path.as_str()).await;
+
+        if let Err(err) = &cert_content {
+            panic!(
+                "Can not read cert file: {}. Err: {:?}",
+                file_path.as_str(),
+                err
+            );
+        }
+
+        Some((cert_content.unwrap(), Some(itm.cert_pass_prase.clone())))
+    }
 }
 
 pub struct AppPostgresSettings(String);

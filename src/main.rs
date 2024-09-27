@@ -27,8 +27,6 @@ mod views;
 
 mod dialogs;
 
-const IGNORE_SINGLE_TIME_SUB_PATH: &str = "ignore-single-time";
-
 // let cfg = dioxus::fullstack::Config::new().addr(([0, 0, 0, 0], 8080));
 
 #[derive(Routable, PartialEq, Clone)]
@@ -56,32 +54,12 @@ fn main() {
 #[component]
 fn Home() -> Element {
     use_context_provider(|| Signal::new(LocationState::Dashboard));
-
     App()
 }
 
 #[component]
 fn DbSize() -> Element {
     use_context_provider(|| Signal::new(LocationState::DbSize));
-
-    App()
-}
-
-#[component]
-fn IgnoreLists(data: Vec<String>) -> Element {
-    if let Some(data) = data.get(0) {
-        if data == IGNORE_SINGLE_TIME_SUB_PATH {
-            use_context_provider(|| Signal::new(LocationState::Dashboard));
-            return App();
-        }
-    }
-    use_context_provider(|| Signal::new(LocationState::Dashboard));
-    App()
-}
-
-#[component]
-fn Settings() -> Element {
-    use_context_provider(|| Signal::new(LocationState::Dashboard));
     App()
 }
 

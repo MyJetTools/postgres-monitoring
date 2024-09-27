@@ -35,9 +35,16 @@ impl AppContext {
         let settings = self.settings_reader.get_settings().await;
         let postgres_settings = settings.get_postgres_settings(env);
 
+        let ssh_private_key = settings.get_ssh_private_key(env).await;
+
         let mut repos = BTreeMap::new();
         for (db_name, postgres_settings) in postgres_settings {
-            let repo = PostgresRepo::new(Arc::new(postgres_settings)).await;
+            let repo = PostgresRepo::new(
+                Arc::new(postgres_settings),
+                self.ssh_sessions_pool.clone(),
+                ssh_private_key.clone(),
+            )
+            .await;
             repos.insert(db_name, repo);
         }
 
@@ -54,6 +61,8 @@ impl AppContext {
         db_name: &str,
     ) -> DbInfoRepo {
         let settings = self.settings_reader.get_settings().await;
+
+        let ssh_private_key = settings.get_ssh_private_key(env).await;
 
         let env_conn_string = settings.envs.get(env);
 
@@ -78,7 +87,12 @@ impl AppContext {
 
         let connection_settings = CustomDbConnection(other_env_conn_string);
 
-        let new_db_repo = DbInfoRepo::new(Arc::new(connection_settings)).await;
+        let new_db_repo = DbInfoRepo::new(
+            Arc::new(connection_settings),
+            self.ssh_sessions_pool.clone(),
+            ssh_private_key,
+        )
+        .await;
 
         new_db_repo
     }

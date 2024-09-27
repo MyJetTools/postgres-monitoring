@@ -2,6 +2,7 @@ use std::{sync::Arc, time::Duration};
 
 use macros::*;
 use my_postgres::*;
+use my_ssh::SshSessionsPool;
 use sql_where::StaticLineWhereModel;
 
 pub struct DbInfoRepo {
@@ -9,10 +10,29 @@ pub struct DbInfoRepo {
 }
 
 impl DbInfoRepo {
-    pub async fn new(postgres_settings: Arc<dyn PostgresSettings + Sync + Send + 'static>) -> Self {
+    pub async fn new(
+        postgres_settings: Arc<dyn PostgresSettings + Sync + Send + 'static>,
+        ssh_sessions: Arc<SshSessionsPool>,
+        private_key: Option<(String, Option<String>)>,
+    ) -> Self {
+        if let Some((private_key, pass_phrase)) = private_key {
+            return Self {
+                postgres: MyPostgres::from_settings(
+                    super::super::app_ctx::APP_NAME,
+                    postgres_settings,
+                )
+                .set_sql_request_timeout(Duration::from_secs(3))
+                .with_ssh_private_key(private_key, pass_phrase)
+                .with_ssh_sessions(ssh_sessions)
+                .build()
+                .await,
+            };
+        }
+
         Self {
             postgres: MyPostgres::from_settings(super::super::app_ctx::APP_NAME, postgres_settings)
                 .set_sql_request_timeout(Duration::from_secs(3))
+                .with_ssh_sessions(ssh_sessions)
                 .build()
                 .await,
         }

@@ -1,6 +1,7 @@
 use std::{sync::Arc, time::Duration};
 
 use my_postgres::{macros::*, sql_where::NoneWhereModel, MyPostgres, PostgresSettings};
+use my_ssh::SshSessionsPool;
 use rust_extensions::date_time::DateTimeAsMicroseconds;
 
 pub struct PostgresRepo {
@@ -8,9 +9,27 @@ pub struct PostgresRepo {
 }
 
 impl PostgresRepo {
-    pub async fn new(postgres_settings: Arc<dyn PostgresSettings + Sync + Send + 'static>) -> Self {
+    pub async fn new(
+        postgres_settings: Arc<dyn PostgresSettings + Sync + Send + 'static>,
+        ssh_sessions: Arc<SshSessionsPool>,
+        private_key: Option<(String, Option<String>)>,
+    ) -> Self {
+        if let Some((private_key, pass_phrase)) = private_key {
+            return Self {
+                postgres: MyPostgres::from_settings(
+                    super::super::app_ctx::APP_NAME,
+                    postgres_settings,
+                )
+                .with_ssh_sessions(ssh_sessions)
+                .with_ssh_private_key(private_key, pass_phrase)
+                .build()
+                .await,
+            };
+        }
+
         Self {
             postgres: MyPostgres::from_settings(super::super::app_ctx::APP_NAME, postgres_settings)
+                .with_ssh_sessions(ssh_sessions)
                 .build()
                 .await,
         }
