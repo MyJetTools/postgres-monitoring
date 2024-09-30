@@ -27,6 +27,9 @@ impl SettingsModel {
     }
 
     pub async fn get_ssh_private_key(&self, env: &str) -> Option<(String, Option<String>)> {
+        if self.ssh_credentials.is_none() {
+            println!("Ssh private keys are not set");
+        }
         let ssh_credentials = self.ssh_credentials.as_ref()?;
 
         if let Some(itm) = ssh_credentials.get(env) {

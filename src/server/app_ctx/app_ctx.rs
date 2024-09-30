@@ -37,6 +37,12 @@ impl AppContext {
 
         let ssh_private_key = settings.get_ssh_private_key(env).await;
 
+        if ssh_private_key.is_none() {
+            panic!("SSH private key not found for env {}", env);
+        } else {
+            println!("SSH private key found for env {}", env);
+        }
+
         let mut repos = BTreeMap::new();
         for (db_name, postgres_settings) in postgres_settings {
             let repo = PostgresRepo::new(
@@ -63,6 +69,12 @@ impl AppContext {
         let settings = self.settings_reader.get_settings().await;
 
         let ssh_private_key = settings.get_ssh_private_key(env).await;
+
+        if ssh_private_key.is_none() {
+            panic!("SSH private key not found for env {}", env);
+        } else {
+            println!("SSH private key found for env {}", env);
+        }
 
         let env_conn_string = settings.envs.get(env);
 
