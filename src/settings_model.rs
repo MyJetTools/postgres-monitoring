@@ -59,7 +59,7 @@ impl SettingsModel {
             );
         }
 
-        println!("Using default ssh credentials for env: {}", env);
+        println!("Loaded default ssh credentials for env: {}", env);
 
         Some((cert_content.unwrap(), Some(itm.cert_pass_prase.clone())))
     }
